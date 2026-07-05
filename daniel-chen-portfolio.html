@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daniel Chen — Supply Chain Portfolio</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THEME TOKENS — every color flows from these variables.
+     Toggling data-theme on <html> instantly re-themes the site.
+     ============================================================ */
+  :root, [data-theme="dark"] {
+    --bg:        #374151;   /* semi-light slate grey */
+    --bg-soft:   #3f4a5c;
+    --surface:   #414c5e;
+    --text:      #F3F4F6;   /* crisp off-white */
+    --text-dim:  #C7CDD6;
+    --accent:    #34D399;   /* minty Spartan green */
+    --accent-soft: rgba(52, 211, 153, 0.14);
+    /* Neumorphic shadow pair — light source top-left */
+    --shadow-dark:  #2b3442;
+    --shadow-light: #445067;
+    --neu-out: 6px 6px 14px var(--shadow-dark), -6px -6px 14px var(--shadow-light);
+    --neu-in:  inset 4px 4px 10px var(--shadow-dark), inset -4px -4px 10px var(--shadow-light);
+    --neu-out-sm: 3px 3px 8px var(--shadow-dark), -3px -3px 8px var(--shadow-light);
+  }
+  [data-theme="light"] {
+    --bg:        #E2E8F0;   /* soft slate gray */
+    --bg-soft:   #d8e0ea;
+    --surface:   #e8edf4;
+    --text:      #1E293B;   /* dark charcoal */
+    --text-dim:  #46556b;
+    --accent:    #18453B;   /* MSU dark green */
+    --accent-soft: rgba(24, 69, 59, 0.12);
+    --shadow-dark:  #b9c3d0;
+    --shadow-light: #ffffff;
+    --neu-out: 6px 6px 14px var(--shadow-dark), -6px -6px 14px var(--shadow-light);
+    --neu-in:  inset 4px 4px 10px var(--shadow-dark), inset -4px -4px 10px var(--shadow-light);
+    --neu-out-sm: 3px 3px 8px var(--shadow-dark), -3px -3px 8px var(--shadow-light);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: background .25s ease, color .25s ease;
+  }
+  .accent      { color: var(--accent); }
+  .accent-bg   { background: var(--accent); }
+  .dim         { color: var(--text-dim); }
+  .surface     { background: var(--surface); }
+
+  /* Neumorphic building blocks (reusable) */
+  .neu        { background: var(--surface); box-shadow: var(--neu-out); border-radius: 1.25rem; transition: box-shadow .25s ease, background .25s ease; }
+  .neu-sm     { background: var(--surface); box-shadow: var(--neu-out-sm); border-radius: .9rem; transition: box-shadow .25s ease, background .25s ease; }
+  .neu-in     { background: var(--bg-soft); box-shadow: var(--neu-in); border-radius: .9rem; }
+  .neu:hover  { box-shadow: var(--neu-out), 0 0 0 2px var(--accent-soft); }
+
+  /* Inputs with soft inset focus */
+  .neu-input {
+    background: var(--bg-soft);
+    box-shadow: var(--neu-in);
+    border-radius: .9rem;
+    border: 2px solid transparent;
+    color: var(--text);
+    transition: border-color .2s ease, box-shadow .25s ease;
+    width: 100%;
+    padding: .8rem 1.1rem;
+    font-size: .95rem;
+  }
+  .neu-input::placeholder { color: var(--text-dim); opacity: .8; }
+  .neu-input:focus { outline: none; border-color: var(--accent); }
+
+  /* Nav links */
+  .nav-link { color: var(--text-dim); font-weight: 500; font-size: .92rem; padding: .45rem .8rem; border-radius: .7rem; transition: color .15s, background .15s; }
+  .nav-link:hover, .nav-link:focus-visible { color: var(--accent); background: var(--accent-soft); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Tags */
+  .tag { display:inline-block; font-size:.75rem; font-weight:600; padding:.28rem .7rem; border-radius:999px; background:var(--accent-soft); color:var(--accent); }
+
+  /* Timeline */
+  .timeline { position: relative; }
+  .timeline::before { content:""; position:absolute; left:11px; top:6px; bottom:6px; width:2px; background:var(--accent); opacity:.35; }
+  .tl-node { position: relative; padding-left: 2.6rem; }
+  .tl-dot { position:absolute; left:2px; top:6px; width:20px; height:20px; border-radius:50%; background:var(--surface); box-shadow: var(--neu-out-sm); display:flex; align-items:center; justify-content:center; }
+  .tl-dot::after { content:""; width:8px; height:8px; border-radius:50%; background:var(--accent); }
+
+  /* ---------- Hero animation: glasses scanning a distant box ---------- */
+  .chain-line { stroke: var(--text-dim); stroke-width: 2.5; stroke-dasharray: 8 8; animation: chainflow 1.6s linear infinite; }
+  @keyframes chainflow { to { stroke-dashoffset: -16; } }
+  .hero-box { animation: boxdrift 7s ease-in-out infinite alternate; }
+  @keyframes boxdrift { from { transform: translateX(0); } to { transform: translateX(-26px); } }
+  .lens-glint { animation: glint 3.5s ease-in-out infinite; transform-origin: center; }
+  @keyframes glint { 0%,100% { opacity:.15; } 50% { opacity:.7; } }
+  .gaze { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 6; opacity:.6; animation: chainflow 1.2s linear infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    .chain-line, .hero-box, .lens-glint, .gaze { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= NAVIGATION ================= -->
+<header class="sticky top-0 z-50" style="background:var(--bg); box-shadow:0 2px 12px rgba(0,0,0,.12);">
+  <nav class="max-w-6xl mx-auto flex items-center justify-between px-5 py-3" aria-label="Main navigation">
+    <a href="#top" class="text-lg font-800 font-bold tracking-tight">Daniel <span class="accent">Chen</span></a>
+    <div class="hidden sm:flex items-center gap-1">
+      <a class="nav-link" href="#experience">Experience</a>
+      <a class="nav-link" href="#leadership">Leadership</a>
+      <a class="nav-link" href="#academic">Academic</a>
+      <a class="nav-link" href="#contact">Contact</a>
+    </div>
+    <button id="themeToggle" class="neu-sm px-3 py-2 text-sm font-semibold" aria-label="Toggle light and dark theme">
+      <span id="themeIcon">☀️</span> <span id="themeLabel" class="hidden sm:inline">Light mode</span>
+    </button>
+  </nav>
+</header>
+
+<main id="top" class="max-w-6xl mx-auto px-5">
+
+  <!-- ================= HERO ================= -->
+  <section class="grid md:grid-cols-2 gap-10 items-center py-16 md:py-24">
+    <div>
+      <p class="tag mb-4">Michigan State University · Supply Chain Management</p>
+      <h1 class="text-4xl md:text-5xl font-800 font-bold leading-tight mb-5">
+        Supply Chain Optimization through <span class="accent">Data & Automation</span>
+      </h1>
+      <p class="dim text-lg leading-relaxed mb-8">
+        I'm Daniel — a junior SCM student bridging logistics, MRP systems, and actionable
+        data analytics. I turn messy operational data into inventory models, procurement
+        insights, and dashboards that people actually use.
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <a href="#experience" class="neu-sm px-5 py-3 font-semibold accent">View my work →</a>
+        <a href="#contact" class="neu-sm px-5 py-3 font-semibold">Get in touch</a>
+      </div>
+    </div>
+
+    <!-- Flat animated graphic: glasses gazing at a box down the supply chain -->
+    <div class="neu p-6" aria-hidden="true">
+      <svg viewBox="0 0 480 260" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of glasses observing a shipment box along a supply chain line">
+        <!-- supply chain line -->
+        <path class="chain-line" fill="none" d="M20 200 H460" />
+        <!-- chain nodes -->
+        <circle cx="120" cy="200" r="6" fill="var(--accent)"/>
+        <circle cx="240" cy="200" r="6" fill="var(--accent)"/>
+        <circle cx="360" cy="200" r="6" fill="var(--accent)"/>
+        <!-- gaze lines from glasses to box -->
+        <path class="gaze" fill="none" d="M120 110 L392 168"/>
+        <path class="gaze" fill="none" d="M120 130 L392 186"/>
+        <!-- glasses (flat) -->
+        <g>
+          <circle cx="85" cy="120" r="34" fill="none" stroke="var(--text)" stroke-width="6"/>
+          <circle cx="165" cy="120" r="34" fill="none" stroke="var(--text)" stroke-width="6"/>
+          <path d="M119 120 q6 -12 12 0" fill="none" stroke="var(--text)" stroke-width="6"/>
+          <path d="M51 112 L28 100" stroke="var(--text)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M199 112 L222 100" stroke="var(--text)" stroke-width="6" stroke-linecap="round"/>
+          <!-- lens glints -->
+          <circle class="lens-glint" cx="75" cy="110" r="9" fill="var(--accent)"/>
+          <circle class="lens-glint" cx="155" cy="110" r="9" fill="var(--accent)"/>
+        </g>
+        <!-- distant box (small = far away), drifting along the chain -->
+        <g class="hero-box">
+          <rect x="392" y="166" width="42" height="34" rx="4" fill="var(--accent)" opacity=".9"/>
+          <line x1="392" y1="180" x2="434" y2="180" stroke="var(--bg)" stroke-width="3"/>
+          <line x1="413" y1="166" x2="413" y2="180" stroke="var(--bg)" stroke-width="3"/>
+        </g>
+        <!-- ground label -->
+        <text x="20" y="236" font-size="12" fill="var(--text-dim)" font-family="Inter">SUPPLIER → PLANT → DC → CUSTOMER</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ================= EXPERIENCE GRID =================
+       Modular: add a new card by duplicating one <article class="neu ..."> block.
+       Grid auto-fits — a 3rd card flows in without CSS changes. -->
+  <section id="experience" class="py-14 scroll-mt-24">
+    <h2 class="text-3xl font-bold mb-2">Experience & <span class="accent">Projects</span></h2>
+    <p class="dim mb-8">Industry work and applied analytics projects.</p>
+
+    <div class="grid gap-8 md:grid-cols-2">
+
+      <article class="neu p-7 flex flex-col">
+        <p class="tag mb-3">Industry Experience</p>
+        <h3 class="text-xl font-bold mb-1">Max Mothes Manufacturing</h3>
+        <p class="dim text-sm mb-4">Tier 2 Automotive Supplier</p>
+        <ul class="space-y-2 text-[.95rem] leading-relaxed mb-5">
+          <li>• Mapped end-to-end supply chain flows from raw material intake to customer shipment.</li>
+          <li>• Built inventory models to right-size safety stock across high-mix, low-volume parts.</li>
+          <li>• Supported procurement by analyzing supplier lead times and cost variance.</li>
+        </ul>
+        <div class="mt-auto flex flex-wrap gap-2">
+          <span class="tag">Inventory Modeling</span><span class="tag">Procurement</span><span class="tag">MRP</span>
+        </div>
+      </article>
+
+      <article class="neu p-7 flex flex-col">
+        <p class="tag mb-3">Project Spotlight · Spring 2025</p>
+        <h3 class="text-xl font-bold mb-1">Oceanic Freight Logistics</h3>
+        <p class="dim text-sm mb-4">Shipping bottleneck analysis — Southeast Asia lanes</p>
+        <ul class="space-y-2 text-[.95rem] leading-relaxed mb-5">
+          <li>• Diagnosed a recurring port congestion bottleneck delaying ocean freight by 9–14 days.</li>
+          <li>• Modeled rerouting and consolidation scenarios; recommended a dual-port strategy.</li>
+          <li>• Delivered an executive Power BI dashboard tracking lane-level transit reliability.</li>
+        </ul>
+        <div class="mt-auto flex flex-wrap gap-2">
+          <span class="tag">Excel</span><span class="tag">SQL</span><span class="tag">Power BI</span><span class="tag">Access</span>
+        </div>
+      </article>
+
+      <!-- ➕ Drop new project cards here -->
+    </div>
+  </section>
+
+  <!-- ================= LEADERSHIP ROW ================= -->
+  <section id="leadership" class="py-14 scroll-mt-24">
+    <h2 class="text-3xl font-bold mb-2">Leadership & <span class="accent">Community</span></h2>
+    <p class="dim mb-8">Organizational involvement on campus.</p>
+    <div class="grid gap-8 sm:grid-cols-2">
+      <div class="neu p-7">
+        <h3 class="font-bold text-lg mb-1">Supply Chain Management Association <span class="accent">(SCMA)</span></h3>
+        <p class="dim text-sm mb-3">Member & Event Volunteer</p>
+        <p class="text-[.95rem] leading-relaxed">Help organize employer networking nights and case competitions connecting SCM students with industry recruiters.</p>
+      </div>
+      <div class="neu p-7">
+        <h3 class="font-bold text-lg mb-1">Multicultural Business Students <span class="accent">(MBS)</span></h3>
+        <p class="dim text-sm mb-3">Active Member</p>
+        <p class="text-[.95rem] leading-relaxed">Support mentorship programming and professional development workshops for underrepresented business students.</p>
+      </div>
+      <!-- ➕ Drop new leadership cards here -->
+    </div>
+  </section>
+
+  <!-- ================= ACADEMIC TIMELINE =================
+       Always expanded. Clicking a node smooth-scrolls to its detail block.
+       Add a node: copy one .tl-node block + one detail block, match data-target/id. -->
+  <section id="academic" class="py-14 scroll-mt-24">
+    <h2 class="text-3xl font-bold mb-2">Academic <span class="accent">Timeline</span></h2>
+    <p class="dim mb-8">Education, core coursework, and skills. Click a node to jump to details.</p>
+
+    <div class="grid gap-10 lg:grid-cols-[1fr_1.2fr]">
+      <div class="timeline space-y-8">
+        <button class="tl-node text-left w-full" data-target="detail-msu">
+          <span class="tl-dot"></span>
+          <span class="block font-bold">Michigan State University</span>
+          <span class="dim text-sm">B.A. Supply Chain Management · Junior · Expected 2027</span>
+        </button>
+        <button class="tl-node text-left w-full" data-target="detail-coursework">
+          <span class="tl-dot"></span>
+          <span class="block font-bold">Core SCM Coursework</span>
+          <span class="dim text-sm">Operations, procurement, logistics, analytics</span>
+        </button>
+        <button class="tl-node text-left w-full" data-target="detail-skills">
+          <span class="tl-dot"></span>
+          <span class="block font-bold">Key Skills</span>
+          <span class="dim text-sm">Technical & analytical toolkit</span>
+        </button>
+        <!-- ➕ New node: copy a button above, set a new data-target -->
+      </div>
+
+      <div class="space-y-6">
+        <div id="detail-msu" class="neu p-6 scroll-mt-28">
+          <h3 class="font-bold mb-2 accent">Michigan State University</h3>
+          <p class="text-[.95rem] leading-relaxed">Broad College of Business — nationally ranked #1 SCM program. Coursework blends operations strategy with hands-on data tooling; active in case competitions and employer treks.</p>
+        </div>
+        <div id="detail-coursework" class="neu p-6 scroll-mt-28">
+          <h3 class="font-bold mb-2 accent">Core SCM Coursework</h3>
+          <p class="text-[.95rem] leading-relaxed">SCM 303 Intro to Supply Chain · SCM 373 Logistics & Transportation · Procurement & Sourcing · Manufacturing Planning & Control (MRP/ERP) · Business Analytics.</p>
+        </div>
+        <div id="detail-skills" class="neu p-6 scroll-mt-28">
+          <h3 class="font-bold mb-2 accent">Key Skills</h3>
+          <div class="flex flex-wrap gap-2">
+            <span class="tag">Excel (advanced)</span><span class="tag">SQL</span><span class="tag">Power BI</span>
+            <span class="tag">Access</span><span class="tag">MRP Systems</span><span class="tag">Inventory Modeling</span>
+            <span class="tag">EOQ / Safety Stock</span><span class="tag">Data Visualization</span>
+          </div>
+        </div>
+        <!-- ➕ New detail: copy a .neu block above with matching id -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section id="contact" class="py-14 scroll-mt-24">
+    <div class="neu p-8 md:p-10 max-w-2xl mx-auto">
+      <h2 class="text-3xl font-bold mb-2">Get in <span class="accent">touch</span></h2>
+      <p class="dim mb-7">Open to internships, projects, and coffee chats.</p>
+      <form id="contactForm" class="space-y-5">
+        <div>
+          <label for="email" class="block text-sm font-semibold mb-2">Your email</label>
+          <input class="neu-input" type="email" id="email" name="email" placeholder="you@example.com" required>
+        </div>
+        <div>
+          <label for="message" class="block text-sm font-semibold mb-2">Message</label>
+          <textarea class="neu-input" id="message" name="message" rows="4" placeholder="What would you like to talk about?" required></textarea>
+        </div>
+        <button type="submit" class="neu-sm px-6 py-3 font-bold accent">Send message</button>
+        <p id="formNote" class="dim text-sm hidden">Thanks — your message is ready. (Hook this form to your email service or Formspree endpoint.)</p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="py-10 text-center dim text-sm">
+    © 2026 Daniel Chen · Built with HTML, Tailwind & vanilla JS · Go Green!
+  </footer>
+</main>
+
+<script>
+  /* ---------- Theme toggle (persistent, with safe fallback) ---------- */
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const icon = document.getElementById('themeIcon');
+  const label = document.getElementById('themeLabel');
+  let memTheme = null; // in-memory fallback if storage is unavailable
+
+  function getSaved() { try { return localStorage.getItem('theme'); } catch { return memTheme; } }
+  function save(t)    { try { localStorage.setItem('theme', t); } catch { memTheme = t; } }
+
+  function applyTheme(t) {
+    root.setAttribute('data-theme', t);
+    const dark = t === 'dark';
+    icon.textContent = dark ? '☀️' : '🌙';
+    label.textContent = dark ? 'Light mode' : 'Dark mode';
+    btn.setAttribute('aria-pressed', String(!dark));
+  }
+  applyTheme(getSaved() || 'dark');
+  btn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(next); save(next);
+  });
+
+  /* ---------- Timeline: click node → smooth scroll to detail ---------- */
+  document.querySelectorAll('.tl-node').forEach(node => {
+    node.addEventListener('click', () => {
+      const el = document.getElementById(node.dataset.target);
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el.style.boxShadow = 'var(--neu-out), 0 0 0 3px var(--accent)';
+      setTimeout(() => { el.style.boxShadow = ''; }, 1200);
+    });
+  });
+
+  /* ---------- Contact form (front-end only) ---------- */
+  document.getElementById('contactForm').addEventListener('submit', e => {
+    e.preventDefault();
+    document.getElementById('formNote').classList.remove('hidden');
+  });
+</script>
+</body>
+</html>
